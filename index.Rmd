@@ -4,7 +4,7 @@ author: "Wyatt Waterbury"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   prettydoc::html_pretty:
-    theme: architect
+    theme: hpstr
     highlight: github
 ---
 ```{r libraries, echo=FALSE, message=FALSE, warning=FALSE}
@@ -152,7 +152,7 @@ write_csv(mortality, "./processedData/stateMortality.csv")
 ```
 
 ## Introduction  
-Your introduction
+COVID-19 continues to sweep the globe and with every new variant of the coronavirus comes another surge of cases. This report will focus on three (3) counties in Michigan; *Ionia*, *Kalamazoo*, and *Mecosta*. Taking a look at the total cases over time across these three counties will provide insight at how impacted they were from COVID-19 and when each variant has been introduced in their population.
 
 ## Data  
 The Michigan COVID-19 data for this document were obtained at https://www.michigan.gov/coronavirus/0,9753,7-406-98163_98173---,00.html in the Public Use Datasets called "Cases by County and Date". The **December 29, 2021** dataset was used to create this report. Michigan county populations were found at https://worldpopulationreview.com/us-counties/states/mi which gives the 2018 census numbers. These were the most recent reliable numbers that I could find at the moment.
@@ -167,7 +167,7 @@ GIS information was left-joined onto the total data. The census data was also le
 ## Statewide distribution   
 Describe and explain the distribution below
 
-```{r state_map1, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=12, fig.cap="**Figure 1:** Add a legend here"}
+```{r state_map1, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=12, fig.cap="**Figure 2:** Add a legend here"}
 mapDataA <- michiganTotalData %>% 
   group_by(Region) %>% 
   rename(region = Region) %>% 
@@ -186,6 +186,7 @@ mapB <- county_choropleth(mapDataB, state_zoom = "michigan", num_colors = 1)
 
 ggarrange(mapA, mapB, labels = c("A", "B"), ncol = 1, nrow = 2, font.label = list(size = 28, color = "black", face = "bold", family = NULL))
 ```
+
 ## State Overall Trends
 Using the county maps below as an example, create a figure showing cases for the entire state over time.
 
