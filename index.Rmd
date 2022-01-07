@@ -1,5 +1,5 @@
 ---
-title: "COVID-19 in Three Counties Final Project"
+title: "COVID-19 in Three Counties - Final Project"
 author: "Wyatt Waterbury"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
@@ -165,9 +165,10 @@ The number of cases and deaths per day are recorded for both confirmed and proba
 GIS information was left-joined onto the total data. The census data was also left-joined and used to create population-normalized values (cases or deaths per 100,000 population).
 
 ## Statewide distribution   
-Describe and explain the distribution below
+Below shows the cumulative distribution of cases and mortalities in all counties throughout Michigan. Shown in the first map distribution (A), Wayne County has the most cases and the surrounding counties, as well as Kent County, also experience high numbers.
+In the second map distribution (B), similarly to the number of cases, Wayne County leads in mortalities and the surrounding counties, as well as Kent County, follow behind.
 
-```{r state_map1, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=12, fig.cap="**Figure 2:** Add a legend here"}
+```{r state_map1, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=12, fig.cap="**Figure 1:** The map shows all the Michigan counties with a certain level of blue indicating the amount of cases/deaths from that county. The darker the blue indicates the higher the totals for cases or deaths. In (A), the darkest blue seen in Wayne County symbolizes around 300,000 cumulative cases of COVID-19. In (B), the darkest blue indicates around 6200 cumulative deaths from COVID-19."}
 mapDataA <- michiganTotalData %>% 
   group_by(Region) %>% 
   rename(region = Region) %>% 
@@ -188,23 +189,28 @@ ggarrange(mapA, mapB, labels = c("A", "B"), ncol = 1, nrow = 2, font.label = lis
 ```
 
 ## State Overall Trends
-Using the county maps below as an example, create a figure showing cases for the entire state over time.
+Not every county experienced the case surges at the same time, but when all the counties are compiled then the information can show when Michigan were at their peak amount of cases collectively.
 
-
+```{r Cases_Throughout_Time, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=7, fig.cap="**Figure 2:** Total number of cases over time from the initial outbreak to today in the state of Michigan. The dates are taken six months apart and the cases are cumulative by days."}
+Cases <- michiganTotalData
+ggplot(Cases, aes(x=Date, y=Cases)) + geom_line() + theme(legend.position="none") +
+    theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=18,face="bold"))
+```
 
 ## Comparing Counties
-Select three counties that experienced different COVID incidences and compare them below. Change the vertical lines to delimit the initial outbreak, alpha, delta, and omicron variants.
+Kalamazoo, Mecosta, and Ionia counties all were exposed to COVID-19 around the same time in March, but during the alpha variant Kalamazoo got up to around 200 new cases per day and even hitting a peak of around 400 new cases per day recently from the omicron variant. Ionia throughout COVID-19 saw a peak of around 75 new cases per day and saw its biggest spike from the alpha variant. Mecosta county saw its biggest peak of about 50 new cases per day and the delta variant showed a higher number of cases than the alpha variant. Similarly in all three counties, this recent wave has lasted the longest and there's a downwards trend.
 
-```{r county_plot, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=7, fig.cap="**Figure 2:** Add a legend here"}
+```{r county_plot, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=7, fig.cap="**Figure 3:** This graph compares the total number of cases per day in Ionia, Kalamazoo, and Mecosta counties by month. The vertical dotted black lines indicate the different variants; (from left to right) first being the initial outbreak, second being the alpha variant, third being the delta variant, and the last being the omicron variant."}
 counties <- michiganTotalData %>% 
-  filter(County == "isabella" | County == "mecosta" | County == "ottawa")
+  filter(County == "kalamazoo" | County == "mecosta" | County == "ionia")
 ggplot(counties, aes(x=Date, y=Cases, color=County, fill=County)) +
-  scale_color_manual(values=c('mecosta'="firebrick", 'isabella'="dodgerblue", 'ottawa'="steelblue")) +
-  scale_fill_manual(legend, values=c('mecosta'="firebrick", 'isabella'="dodgerblue", 'ottawa'="steelblue")) +
+  scale_color_manual(values=c('mecosta'="cornflowerblue", 'kalamazoo'="darkolivegreen3", 'ionia'="red")) +
+  scale_fill_manual(legend, values=c('mecosta'="cornflowerblue", 'kalamazoo'="darkolivegreen3", 'ionia'="red")) +
   scale_x_datetime(breaks = date_breaks("months"),labels = date_format("%b")) +
   geom_bar(stat = "identity") +
   geom_ma(ma_fun = EMA, n = 7, wilder = TRUE, linetype = 1, size = 2) +
-  geom_vline(xintercept = as.POSIXct(as.Date(c("2020-07-04", "2020-08-17", "2020-08-31", "2020-09-07"))), linetype=4) +
+  geom_vline(xintercept = as.POSIXct(as.Date(c("2020-06-15", "2020-11-15", "2021-04-15", "2021-11-15"), event=c("Initial Outbreak", "Alpha", "Delta", "Omicron"))), linetype=4) +
   facet_grid(rows=vars(County), scales="free_y") +
   theme_bw() +
   theme(legend.position="none") +
@@ -212,12 +218,12 @@ ggplot(counties, aes(x=Date, y=Cases, color=County, fill=County)) +
         axis.title=element_text(size=18,face="bold"))
 ```
 
-```{r weekly_county_plot, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=7, fig.cap="**Figure 6:** A comparison of the number of total cases in Isabella, Mecosta, and Ottawa counties by week. The bars indicate total daily cases and the lines are four-week moving averages." }
+```{r weekly_county_plot, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=7, fig.cap="**Figure 4:** A comparison of the number of total cases in Kalamazoo, Mecosta, and Ionia counties by week. The bars indicate total daily cases and the lines are four-week moving averages." }
 counties <- weekly %>% 
-  filter(County == "isabella" | County == "mecosta" | County == "ottawa")
+  filter(County == "kalamazoo" | County == "mecosta" | County == "ionia")
 ggplot(counties, aes(x=Week, y=Weekly.Cases, color=County, fill=County)) +
-    scale_color_manual(values=c('mecosta'="firebrick", 'isabella'="dodgerblue", 'ottawa'="steelblue")) +
-  scale_fill_manual(legend, values=c('mecosta'="firebrick", 'isabella'="dodgerblue", 'ottawa'="steelblue")) +
+    scale_color_manual(values=c('mecosta'="cornflowerblue", 'kalamazoo'="darkolivegreen3", 'ionia'="red")) +
+  scale_fill_manual(legend, values=c('mecosta'="cornflowerblue", 'kalamazoo'="darkolivegreen3", 'ionia'="red")) +
   geom_bar(stat = "identity") +
   geom_ma(ma_fun = EMA, n = 4, wilder = TRUE, linetype = 1, size = 2) +
   facet_grid(rows=vars(County), scales="free_y") +
@@ -228,9 +234,6 @@ ggplot(counties, aes(x=Week, y=Weekly.Cases, color=County, fill=County)) +
 ```
 
 ## Conclusions  
-Conclusions go here.
-
-## References
-Any references here.
+COVID-19 has lead to multiple spikes of new cases and deaths, with most of them localized to a few counties like Wayne County. Every time there is a new variant, the amount of cases in Michigan greatly increases and can be seen on the three counties highlighted in this project; Kalamazoo, Ionia, and Mecosta. Within the three counties, Kalamazoo County leads in total number of cases and deaths which could be reasoned to the higher population and bigger cities. Although we see a downwards trend now of the omicron variant, our data suggests that within the next year we could experience another surge of COVID-19 cases as the coronavirus continues to mutate.
 
 
